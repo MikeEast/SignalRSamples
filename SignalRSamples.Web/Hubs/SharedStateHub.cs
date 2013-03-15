@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using Microsoft.AspNet.SignalR;
@@ -15,17 +16,10 @@ namespace SignalRSamples.Web.Hubs
             Plot = "A young recruit in Vietnam faces a moral crisis when confronted with the horrors of war and the duality of man."
         };
         
-        public Movie Movie
+        public void Update(Movie m)
         {
-            get { return movie; }
-            set { movie = value; }
-        }
-
-        public void Update()
-        {
-            var s = Clients.Caller.title;
-            Movie = Clients.Caller.movie;
-            Clients.Others.update();
+            movie = m;
+            Clients.Others.update(movie);
         }
 
         public Movie GetMovie()

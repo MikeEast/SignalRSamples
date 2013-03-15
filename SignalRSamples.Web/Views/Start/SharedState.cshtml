@@ -34,13 +34,10 @@
 
             $('input, textarea').keyup(function() {
                 var movie = getState();
-                sharedStateHub.state.title = "Platoon";
-                sharedStateHub.state.movie = movie;
-                sharedStateHub.server.update();
+                sharedStateHub.server.update(movie);
             });
 
-            sharedStateHub.client.update = function () {
-                var movie = sharedStateHub.state.movie;
+            sharedStateHub.client.update = function (movie) {
                 setState(movie);
             };
 

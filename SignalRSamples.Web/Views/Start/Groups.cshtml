@@ -1,0 +1,113 @@
+﻿@model dynamic
+
+@section styles {
+    <link href="~/Content/bootstrapSwitch.css" rel="stylesheet" />
+}
+
+@section scripts
+{
+    <script src="~/Scripts/bootstrapSwitch.js"></script>
+    <script language="javascript">
+        $(document).ready(function() {
+            // Enable logging
+            $.connection.hub.logging = true;
+
+            // Create an instance of the proxy generated for SimpleHub
+            var groupsHub = $.connection.groupsHub;
+
+            $('form').each(function () {
+                var form = $(this);
+                form.groupId = form.attr('id');
+                form.find('.switch').on('switch-change', function (e, data) {
+                    if (data.value) {
+                        groupsHub.server.joinGroup(form.groupId);
+                    }
+                    else {
+                        groupsHub.server.leaveGroup(form.groupId);
+                    }
+                });
+                form.find('button').click(function () {
+                    event.preventDefault();
+                    var message = form.find(':text').val();
+                    groupsHub.server.sendToGroup(form.groupId, message)
+                        .done(function() {
+                            form.find(':text').val('');
+                        });
+                });
+            });
+            
+            groupsHub.client.notify = function (groupName, message) {
+                console.log(groupName);
+                console.log(message);
+                $('#' + groupName).append('<li>' + message + '</li>');
+            };
+
+            $.connection.hub.start();
+        });
+    </script>
+}
+
+
+<div class="row-fluid">
+    <div class="span12">
+        <fieldset>
+            <legend>Groups</legend>
+            <p>
+                This example explains the concept of groups. Click the subscription buttons to join or leave groups. Then write messages in each group. Open another browser to see the result.
+            </p>
+        </fieldset>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span4">
+        <form id="developers" onsubmit="event.preventDefault(); $(this).find('button').click();">
+            <fieldset>
+                <legend>Developers</legend>
+                
+                <label>Subscribed</label>
+                <div class="switch switch-small" data-on-label="On" data-off-label="Off">
+                    <input type="checkbox" />
+                </div>
+                <label>Message</label>
+                <input class="input-xlarge" type="text" placeholder="Type a message" />
+                <button class="btn">Send</button>    
+            
+                <ul class="unstyled"></ul>
+            </fieldset>
+        </form>
+    </div>
+    <div class="span4">
+        <form id="designers" onsubmit="event.preventDefault(); $(this).find('button').click();">
+            <fieldset>
+                <legend>Designers</legend>
+
+                <label>Subscribed</label>
+                <div class="switch switch-small" data-on-label="On" data-off-label="Off">
+                    <input type="checkbox" />
+                </div>
+                <label>Message</label>
+                <input class="input-xlarge" type="text" placeholder="Type a message" />
+                <button class="btn">Send</button>    
+            
+                <ul class="unstyled"></ul>
+            </fieldset>
+        </form>
+    </div>
+    <div class="span4">
+        <form id="testers" onsubmit="event.preventDefault(); $(this).find('button').click();">
+            <fieldset>
+                <legend>Testers</legend>
+
+                <label>Subscribed</label>
+                <div class="switch switch-small" data-on-label="On" data-off-label="Off">
+                    <input type="checkbox" />
+                </div>
+                <label>Message</label>
+                <input class="input-xlarge" type="text" placeholder="Type a message" />
+                <button class="btn">Send</button>    
+            
+                <ul class="unstyled"></ul>
+            </fieldset>
+        </form>
+    </div>
+</div>

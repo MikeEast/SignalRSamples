@@ -1,0 +1,74 @@
+﻿@model dynamic
+
+@section scripts
+{
+     <script type="text/javascript">
+        $(document).ready(function () {
+            // Enable logging
+            $.connection.hub.logging = true;
+            $.connection.hub.stateChanged(function (e) {
+                console.log(e);
+            });
+            $.connection.hub.error(function (e) {
+                console.log(e);
+            });
+
+            // Create an instance of the proxy generated for SimpleHub
+            var sharedStateHub = $.connection.sharedStateHub;
+            
+            var setState = function (movie) {
+                var form = $('form');
+                form.find('#title').val(movie.Title);
+                form.find('#score').val(movie.Score);
+                form.find('#plot').val(movie.Plot);
+            };
+
+            var getState = function() {
+                var form = $('form');
+                return {
+                    Title: form.find('#title').val(),
+                    Score: form.find('#score').val(),
+                    Plot: form.find('#plot').val()
+                };
+            };
+
+            $('input, textarea').keyup(function() {
+                var movie = getState();
+                sharedStateHub.state.title = "Platoon";
+                sharedStateHub.state.movie = movie;
+                sharedStateHub.server.update();
+            });
+
+            sharedStateHub.client.update = function () {
+                var movie = sharedStateHub.state.movie;
+                setState(movie);
+            };
+
+            $.connection.hub.start(function() {
+                sharedStateHub.server.getMovie()
+                    .done(function(m) {
+                        setState(m);
+                    });
+            });
+        })
+    </script>
+}
+
+<div class="row-fluid">
+    <div class="span6">
+        <fieldset>
+            <legend>Shared state</legend>
+            <p>
+                This is using a Hub connection to share state between all connected clients.
+            </p>
+            <div>
+                <form onsubmit="event.preventDefault(); $(this).find('button').click();">
+                    <input id="title" class="input-medium" type="text" placeholder="Type a title" />
+                    <input id="score" class="input-mini" type="text" placeholder="score" />
+                    <textarea id="plot" class="input-xxlarge" placeholder="Type a message" ></textarea>
+                    <ul></ul>
+                </form>
+            </div>
+        </fieldset>
+    </div>
+</div>

@@ -1,0 +1,81 @@
+﻿@model dynamic
+
+@section scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Enable logging
+            $.connection.hub.logging = true;
+
+            // Create an instance of the proxy generated for SimpleHub
+            var simpleHub = $.connection.simpleHub;
+
+            // Declare a function on the chat hub so the server can invoke it
+            simpleHub.client.notify = function (message) {
+                $('#messages').append('<li>' + message + '</li>');
+            };
+            
+            $("#sendAll button").click(function () {
+                event.preventDefault();
+                var input = $(this).prev('input');
+                // Call the sendAll method on SimpleHub
+                simpleHub.server.sendAll(input.val());
+                input.val('');
+            });
+            
+            $("#sendAllExceptSelf button").click(function () {
+                event.preventDefault();
+                var input = $(this).prev('input');
+                // Call the sendAll method on SimpleHub
+                simpleHub.server.sendAllExceptSelf(input.val());
+                input.val('');
+            });
+
+            $.connection.hub.start();
+        })
+    </script>
+}
+
+<div class="row-fluid">
+    <div class="span6">
+        <fieldset>
+            <legend>Send to all</legend>
+            <p>
+                This is using a Hub connection to broadcast messages to all connected clients.
+            </p>
+            <div>
+                <form class="form-inline" id="sendAll" onsubmit="event.preventDefault(); $(this).find('button').click();">
+                    <input type="text" placeholder="Type a message" />
+                    <button class="btn">Send</button>
+                    <ul></ul>
+                </form>
+            </div>
+        </fieldset>
+    </div>
+    
+    <div class="span6">
+        <fieldset>
+            <legend>Send to all except self</legend>
+            <p>
+                This is using a Hub connection to broadcast messages to all connected clients <b>except yourself</b>.
+            </p>
+            <div>
+                <form class="form-inline" id="sendAllExceptSelf" onsubmit="event.preventDefault(); $(this).find('button').click();">
+                    <input type="text" placeholder="Type a message" />
+                    <button class="btn">Send</button>
+                    <ul class="unstyled"></ul>
+                </form>
+            </div>
+        </fieldset>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span12">
+        <fieldset>
+            <legend>Received messages</legend>
+            <div>
+                <ul class="unstyled" id="messages"></ul>
+            </div>
+        </fieldset>
+    </div>
+</div>

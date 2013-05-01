@@ -11,7 +11,7 @@ namespace SignalRSamples.ConsoleApp
     {
         static void Main(string[] args)
         {
-            Console.WindowWidth = 120;
+            Console.WindowWidth = 80;
             Console.ForegroundColor = ConsoleColor.Green;
 
             // Connect to the service
@@ -22,6 +22,12 @@ namespace SignalRSamples.ConsoleApp
 
             // Print the message when it comes in
             chat.On("notify", message => Console.WriteLine(message));
+
+            var movr = hubConnection.CreateHubProxy("movrHub");
+
+            movr.On< int, int>("moved", (x, y) => {
+                Console.WriteLine("Coords: {0} {1}", x, y);
+            });
 
             // Start the connection
             hubConnection.Start().Wait();

@@ -30,5 +30,11 @@ namespace SignalRSamples.Web.Controllers
         {
             return View();
         }
+
+        public ActionResult Movr()
+        {
+            return View();
+        }
+
     }
 }

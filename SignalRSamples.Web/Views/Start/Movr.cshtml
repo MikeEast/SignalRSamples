@@ -1,0 +1,43 @@
+﻿@model dynamic
+
+@section styles
+{
+    <style>
+        #thing {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-color: #ccc;
+        }
+    </style>
+}
+
+@section scripts
+{
+    <script src="~/Scripts/jquery-ui-1.10.2.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $.connection.hub.logging = true;
+
+            var hub = $.connection.movrHub;
+
+            hub.client.moved = function(x, y) {
+                $('#thing').css({ left: x, top: y });
+            };
+            
+            $.connection.hub.start(function() {
+                $("#thing").draggable({
+                    drag: function() {
+                        hub.server.move(this.offsetLeft, this.offsetTop);
+                    }
+                });
+            });
+        });
+    </script>
+    
+
+}
+
+<div id="thing">
+    
+</div>
